@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FindScribe — Steal the Pattern. Ship the Script.</title>
+<meta name="description" content="FindScribe finds viral posts, transcribes the exact script, and turns winning patterns into reusable templates. One sentence from idea to publish-ready script.">
+<meta property="og:title" content="FindScribe — Steal the Pattern. Ship the Script.">
+<meta property="og:description" content="Find viral posts. Transcribe the script. Templatize the pattern. Built for creators who ship every week.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060608; --bg2:#0a0a0e; --surface:#101014; --surface2:#15151b;
+  --text:#f2f2f0; --muted:#9a9aa3; --dim:#5c5c66;
+  --lime:#d4ff3f; --lime-soft:rgba(212,255,63,.12); --lime-glow:rgba(212,255,63,.35);
+  --violet:#8b5cf6; --violet-soft:rgba(139,92,246,.15);
+  --border:rgba(255,255,255,.08); --border2:rgba(255,255,255,.14);
+  --radius:20px;
+  --font-d:'Space Grotesk',sans-serif; --font-b:'Inter',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased}
+::selection{background:var(--lime);color:#000}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* ── noise + ambient ── */
+.noise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.5;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;opacity:.5}
+.orb-lime{background:radial-gradient(circle,rgba(212,255,63,.22),transparent 70%);width:640px;height:640px;animation:drift1 16s ease-in-out infinite alternate}
+.orb-violet{background:radial-gradient(circle,rgba(139,92,246,.25),transparent 70%);width:560px;height:560px;animation:drift2 20s ease-in-out infinite alternate}
+@keyframes drift1{0%{transform:translate(0,0) scale(1)}100%{transform:translate(90px,60px) scale(1.15)}}
+@keyframes drift2{0%{transform:translate(0,0) scale(1.1)}100%{transform:translate(-80px,-50px) scale(.95)}}
+
+/* ── progress + nav ── */
+#progress{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,var(--lime),var(--violet));z-index:200;transition:width .1s linear}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;transition:all .4s}
+nav .inner{max-width:1180px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+nav.scrolled{background:rgba(6,6,8,.72);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:var(--font-d);font-weight:700;font-size:1.25rem;display:flex;align-items:center;gap:10px}
+.logo .mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--lime),#7ddba1);display:grid;place-items:center;color:#000;font-size:14px;font-weight:700}
+.nav-links{display:flex;gap:28px;align-items:center;font-size:.9rem;color:var(--muted)}
+.nav-links a{transition:color .2s}.nav-links a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.95rem;border-radius:12px;padding:13px 24px;cursor:pointer;border:none;transition:transform .25s cubic-bezier(.16,1,.3,1),box-shadow .25s,background .2s;will-change:transform}
+.btn-primary{background:var(--lime);color:#000;box-shadow:0 0 0 rgba(212,255,63,0)}
+.btn-primary:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 12px 40px var(--lime-glow)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border2)}
+.btn-ghost:hover{transform:translateY(-2px);background:rgba(255,255,255,.09)}
+.btn-sm{padding:9px 18px;font-size:.85rem}
+.nav-cta{display:flex;gap:12px;align-items:center}
+
+/* ── hero ── */
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;overflow:hidden;z-index:0}
+.hero-bg{position:absolute;inset:0;z-index:-1;background:
+ radial-gradient(ellipse 80% 55% at 50% -10%,rgba(139,92,246,.14),transparent),
+ radial-gradient(ellipse 60% 45% at 85% 110%,rgba(212,255,63,.07),transparent)}
+.hero-inner{position:relative;z-index:2;padding-top:110px;animation:heroZoom 1.4s cubic-bezier(.16,1,.3,1) both}
+@keyframes heroZoom{0%{opacity:0;transform:scale(.92) translateY(24px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.pill{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:600;color:var(--lime);background:var(--lime-soft);border:1px solid rgba(212,255,63,.25);border-radius:100px;padding:6px 14px;margin-bottom:28px}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:var(--lime);animation:pulseDot 1.6s infinite}
+@keyframes pulseDot{50%{opacity:.3}}
+h1{font-family:var(--font-d);font-size:clamp(3rem,8.2vw,6.4rem);line-height:1.02;font-weight:700;letter-spacing:-.035em;max-width:1000px}
+h1 .line{display:block;overflow:hidden}
+h1 .word{display:inline-block;transform:translateY(110%);animation:wordUp .9s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes wordUp{to{transform:translateY(0)}}
+h1 .accent{color:var(--lime);position:relative}
+.rotator{display:inline-block;color:var(--lime);border-bottom:3px solid var(--lime);padding-bottom:2px;min-width:5.2ch}
+.hero-sub{margin-top:28px;font-size:clamp(1.05rem,2vw,1.3rem);color:var(--muted);max-width:640px;animation:fadeUp 1s .5s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.hero-ctas{display:flex;gap:16px;margin-top:40px;flex-wrap:wrap;animation:fadeUp 1s .65s both}
+.hero-note{margin-top:18px;font-size:.82rem;color:var(--dim);animation:fadeUp 1s .8s both}
+.platforms{display:flex;gap:10px;margin-top:44px;flex-wrap:wrap;animation:fadeUp 1s .9s both}
+.plat{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:500;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--border);padding:8px 16px;border-radius:100px;transition:all .25s}
+.plat:hover{transform:translateY(-3px);color:var(--text);border-color:var(--border2)}
+.plat .ic{width:16px;height:16px;border-radius:4px}
+
+/* ── chat mock ── */
+.chat-mock{position:absolute;right:2%;top:50%;transform:translateY(-46%) rotate(2.5deg);width:400px;z-index:2;animation:floatChat 7s ease-in-out infinite, fadeUp 1.2s .4s both}
+@keyframes floatChat{50%{transform:translateY(-52%) rotate(1.5deg)}}
+.chat-card{background:rgba(16,16,20,.85);backdrop-filter:blur(24px);border:1px solid var(--border2);border-radius:22px;padding:20px;box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 60px rgba(139,92,246,.08)}
+.chat-head{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:14px}
+.chat-head .avatar{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--lime),var(--violet))}
+.chat-head .nm{font-size:.85rem;font-weight:600}
+.chat-head .st{font-size:.7rem;color:var(--lime)}
+.msg{max-width:88%;padding:10px 14px;border-radius:14px;font-size:.85rem;margin-bottom:10px;line-height:1.5}
+.msg.user{background:rgba(255,255,255,.07);margin-left:auto;border-bottom-right-radius:4px}
+.msg.ai{background:rgba(212,255,63,.08);border:1px solid rgba(212,255,63,.18);border-bottom-left-radius:4px}
+.typing{display:inline-flex;gap:4px;padding:12px 16px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:tyb 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tyb{30%{transform:translateY(-4px);opacity:1}60%{opacity:.4}}
+@media(max-width:1080px){.chat-mock{display:none}}
+
+/* ── marquee ── */
+.marquee-sec{padding:34px 0 10px;overflow:hidden;position:relative}
+.marquee-sec::before,.marquee-sec::after{content:'';position:absolute;top:0;bottom:0;width:140px;z-index:2;pointer-events:none}
+.marquee-sec::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
+.marquee-sec::after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
+.marquee{display:flex;gap:56px;width:max-content;animation:scrollX 26s linear infinite}
+.marquee:hover{animation-play-state:paused}
+@keyframes scrollX{to{transform:translateX(-50%)}}
+.mq-item{display:flex;align-items:center;gap:12px;color:var(--dim);font-family:var(--font-d);font-weight:600;font-size:1.05rem;white-space:nowrap;transition:color .3s}
+.mq-item:hover{color:var(--text)}
+
+/* ── sections ── */
+section{position:relative;padding:110px 0}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--lime);margin-bottom:18px}
+h2{font-family:var(--font-d);font-size:clamp(2.1rem,4.6vw,3.6rem);font-weight:700;letter-spacing:-.03em;line-height:1.08}
+.sec-sub{color:var(--muted);font-size:1.08rem;margin-top:18px;max-width:620px}
+.center{text-align:center}.center .sec-sub{margin-left:auto;margin-right:auto}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal.zoom{transform:scale(.88)}
+.reveal.zoom.in{transform:scale(1)}
+
+/* ── problem ── */
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+@media(max-width:900px){.problem-grid{grid-template-columns:1fr}}
+.big-quote{font-family:var(--font-d);font-size:clamp(1.5rem,3vw,2.3rem);line-height:1.3;letter-spacing:-.02em}
+.big-quote em{color:var(--lime);font-style:normal}
+.pain{display:flex;flex-direction:column;gap:14px}
+.pain-item{display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 22px;transition:transform .3s,border-color .3s}
+.pain-item:hover{transform:translateX(6px);border-color:rgba(239,68,68,.35)}
+.pain-item .x{color:#ef4444;font-weight:700}
+.pain-item .ok{color:var(--lime);font-weight:700}
+.pain-item p{font-size:.92rem;color:var(--muted)}
+.pain-item p b{color:var(--text)}
+
+/* ── steps (scroll zoom) ── */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:64px}
+@media(max-width:900px){.steps{grid-template-columns:1fr}}
+.step-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:38px 32px;overflow:hidden;transition:transform .5s cubic-bezier(.16,1,.3,1),border-color .4s,box-shadow .5s;will-change:transform}
+.step-card:hover{transform:translateY(-8px) scale(1.02);border-color:var(--border2);box-shadow:0 30px 60px rgba(0,0,0,.45)}
+.step-card .num{font-family:var(--font-d);font-size:4.6rem;font-weight:700;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.14);line-height:1;transition:all .5s}
+.step-card:hover .num{color:var(--lime-soft);-webkit-text-stroke:1.5px var(--lime)}
+.step-card h3{font-family:var(--font-d);font-size:1.5rem;font-weight:600;margin:22px 0 12px;letter-spacing:-.01em}
+.step-card p{color:var(--muted);font-size:.95rem}
+.step-card .glowline{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--lime),var(--violet));transform:scaleX(0);transform-origin:left;transition:transform .6s}
+.step-card:hover .glowline{transform:scaleX(1)}
+
+/* ── features tilt ── */
+.tilt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:64px;perspective:1400px}
+@media(max-width:900px){.tilt-grid{grid-template-columns:1fr}}
+.tilt{background:linear-gradient(160deg,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:var(--radius);padding:36px 32px;position:relative;transition:box-shadow .4s,border-color .4s;transform-style:preserve-3d;will-change:transform}
+.tilt:hover{border-color:var(--border2);box-shadow:0 26px 70px rgba(0,0,0,.5)}
+.tilt .icon{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;font-size:1.5rem;margin-bottom:24px;transform:translateZ(30px)}
+.tilt:nth-child(1) .icon{background:var(--lime-soft);border:1px solid rgba(212,255,63,.3)}
+.tilt:nth-child(2) .icon{background:var(--violet-soft);border:1px solid rgba(139,92,246,.3)}
+.tilt:nth-child(3) .icon{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3)}
+.tilt h3{font-family:var(--font-d);font-size:1.45rem;font-weight:600;margin-bottom:12px;transform:translateZ(24px)}
+.tilt p{color:var(--muted);font-size:.95rem;transform:translateZ(18px)}
+.tilt .feat-list{margin-top:20px;display:flex;flex-direction:column;gap:9px}
+.tilt .feat-list span{font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:9px;transform:translateZ(14px)}
+.tilt .feat-list i{color:var(--lime);font-style:normal}
+
+/* ── template demo ── */
+.tpl-band{background:linear-gradient(180deg,var(--bg),var(--bg2) 50%,var(--bg));border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tpl-demo{margin-top:60px;display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:stretch}
+@media(max-width:900px){.tpl-demo{grid-template-columns:1fr}}
+.tpl-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:34px;position:relative;overflow:hidden}
+.tpl-card::before{content:'TEMPLATE';position:absolute;top:18px;right:22px;font-size:.62rem;letter-spacing:.2em;font-weight:700;color:var(--dim)}
+.tpl-line{font-family:var(--font-d);font-size:1.06rem;line-height:2.05;margin-bottom:4px}
+.blank{color:var(--lime);background:var(--lime-soft);border:1px dashed rgba(212,255,63,.45);border-radius:8px;padding:1px 12px;font-weight:600;cursor:default;transition:all .3s;display:inline-block}
+.blank:hover,.blank.hot{background:rgba(212,255,63,.22);transform:scale(1.06);box-shadow:0 0 24px var(--lime-glow)}
+.tpl-meta{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+.chip{font-size:.72rem;font-weight:600;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--border);padding:5px 13px;border-radius:100px}
+.tpl-why{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:34px}
+.tpl-why h4{font-family:var(--font-d);font-size:1.15rem;margin-bottom:18px}
+.why-row{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;font-size:.92rem;color:var(--muted)}
+.why-row b{color:var(--text)}
+.why-row .n{color:var(--lime);font-weight:700;font-family:var(--font-d)}
+
+/* ── gallery zoom ── */
+.gal{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:64px}
+@media(max-width:900px){.gal{grid-template-columns:repeat(2,1fr)}}
+.g-card{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:16/10;border:1px solid var(--border);cursor:pointer;transform:scale(.96);transition:transform .6s cubic-bezier(.16,1,.3,1),border-color .4s}
+.g-card:hover{transform:scale(1.03);border-color:var(--border2);z-index:3}
+.g-card .art{position:absolute;inset:0;transition:transform 1s cubic-bezier(.16,1,.3,1)}
+.g-card:hover .art{transform:scale(1.12)}
+.g-card .veil{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85),transparent 55%)}
+.g-card .lab{position:absolute;left:16px;right:16px;bottom:14px;z-index:2}
+.g-card .lab .t{font-size:.88rem;font-weight:600}
+.g-card .lab .v{font-size:.72rem;color:var(--lime);font-weight:600;margin-top:3px}
+
+/* ── stats ── */
+.stats-band{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:64px}
+@media(max-width:900px){.stats-band{grid-template-columns:repeat(2,1fr)}}
+.stat{text-align:center;padding:36px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);transition:transform .4s,border-color .4s}
+.stat:hover{transform:translateY(-6px);border-color:rgba(212,255,63,.3)}
+.stat .v{font-family:var(--font-d);font-size:2.9rem;font-weight:700;letter-spacing:-.03em}
+.stat .v em{font-style:normal;color:var(--lime)}
+.stat .l{color:var(--muted);font-size:.86rem;margin-top:8px}
+
+/* ── testimonials ── */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:64px}
+@media(max-width:900px){.testi-grid{grid-template-columns:1fr}}
+.t-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:30px;transition:transform .4s,border-color .4s}
+.t-card:hover{transform:translateY(-6px) scale(1.01);border-color:var(--border2)}
+.t-card p{font-size:.95rem;color:var(--text);line-height:1.7}
+.t-card .who{display:flex;align-items:center;gap:12px;margin-top:24px}
+.t-card .av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--lime),var(--violet));display:grid;place-items:center;color:#000;font-weight:700;font-size:.9rem}
+.t-card .nm{font-weight:600;font-size:.9rem}
+.t-card .role{font-size:.76rem;color:var(--dim)}
+
+/* ── pricing ── */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:64px;align-items:stretch}
+@media(max-width:900px){.price-grid{grid-template-columns:1fr}}
+.p-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:36px 32px;display:flex;flex-direction:column;position:relative;transition:transform .45s,border-color .4s,box-shadow .45s}
+.p-card:hover{transform:translateY(-8px)}
+.p-card.hot{border:1px solid rgba(212,255,63,.4);background:linear-gradient(170deg,rgba(212,255,63,.05),var(--surface) 40%)}
+.p-card.hot:hover{box-shadow:0 30px 80px rgba(212,255,63,.1)}
+.p-card .tag-hot{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--lime);color:#000;font-size:.68rem;font-weight:700;padding:5px 14px;border-radius:100px;letter-spacing:.08em}
+.p-card h3{font-family:var(--font-d);font-size:1.2rem;font-weight:600}
+.p-card .desc{font-size:.8rem;color:var(--dim);margin-top:6px}
+.p-card .pr{font-family:var(--font-d);font-size:3rem;font-weight:700;margin:22px 0 4px;letter-spacing:-.03em}
+.p-card .pr span{font-size:.95rem;color:var(--dim);font-weight:400}
+.p-card ul{list-style:none;margin:24px 0 32px;display:flex;flex-direction:column;gap:11px;flex:1}
+.p-card li{font-size:.88rem;color:var(--muted);display:flex;gap:10px;align-items:flex-start}
+.p-card li::before{content:'✓';color:var(--lime);font-weight:700}
+.p-card .btn{width:100%;justify-content:center}
+.custom-note{text-align:center;margin-top:28px;color:var(--dim);font-size:.9rem}
+.custom-note a{color:var(--lime);font-weight:600}
+
+/* ── faq ── */
+.faq{max-width:760px;margin:60px auto 0}
+.f-item{border-bottom:1px solid var(--border)}
+.f-q{width:100%;background:none;border:none;color:var(--text);font-family:var(--font-d);font-size:1.08rem;font-weight:600;text-align:left;padding:24px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;cursor:pointer}
+.f-q .pm{color:var(--lime);font-size:1.4rem;transition:transform .4s;flex-shrink:0}
+.f-item.open .f-q .pm{transform:rotate(45deg)}
+.f-a{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.16,1,.3,1)}
+.f-a p{color:var(--muted);font-size:.94rem;padding-bottom:24px;max-width:92%}
+
+/* ── cta ── */
+.cta-final{text-align:center;position:relative;overflow:hidden}
+.cta-final .orb{left:50%;top:50%;transform:translate(-50%,-50%)}
+.cta-final h2{font-size:clamp(2.6rem,6vw,4.6rem)}
+.cta-final h2 .z{display:inline-block;animation:ctaZoom 5s ease-in-out infinite}
+@keyframes ctaZoom{50%{transform:scale(1.045)}}
+.cta-final .btn{margin-top:40px;font-size:1.05rem;padding:17px 38px}
+
+footer{border-top:1px solid var(--border);padding:56px 0 40px;position:relative;z-index:2}
+.foot{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:center}
+.foot .links{display:flex;gap:26px;font-size:.85rem;color:var(--muted)}
+.foot .links a:hover{color:var(--text)}
+.foot .fine{font-size:.76rem;color:var(--dim)}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div id="progress"></div>
+
+<nav id="nav">
+  <div class="inner">
+    <a class="logo" href="#"><span class="mark">F</span>FindScribe</a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Product</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#" class="btn btn-ghost btn-sm">Log in</a>
+      <a href="#pricing" class="btn btn-primary btn-sm">Try FindScribe</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-bg"><div class="orb orb-violet" style="top:-10%;right:-8%"></div><div class="orb orb-lime" style="bottom:-16%;left:-10%"></div></div>
+  <div class="wrap hero-inner">
+    <div class="pill"><span class="dot"></span>The pattern engine for creators</div>
+    <h1>
+      <span class="line"><span class="word" style="animation-delay:.05s">Steal</span> <span class="word" style="animation-delay:.12s">the</span> <span class="word" style="animation-delay:.19s">pattern.</span></span>
+      <span class="line"><span class="word" style="animation-delay:.30s">Ship</span> <span class="word" style="animation-delay:.37s">the</span> <span class="word accent" style="animation-delay:.44s">script.</span></span>
+    </h1>
+    <p class="hero-sub">FindScribe finds viral posts, transcribes the exact script, and turns the winning pattern into a reusable template — from one sentence.</p>
+    <div class="hero-ctas">
+      <a href="#pricing" class="btn btn-primary">Try FindScribe free →</a>
+      <a href="#how" class="btn btn-ghost">▶ See it work</a>
+    </div>
+    <p class="hero-note">Free account · 15 starter credits · No card required</p>
+    <div class="platforms">
+      <span class="plat"><span class="ic" style="background:#FF0000"></span>YouTube</span>
+      <span class="plat"><span class="ic" style="background:#FE2C55"></span>TikTok</span>
+      <span class="plat"><span class="ic" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)"></span>Instagram</span>
+      <span class="plat"><span class="ic" style="background:#1877F2"></span>Facebook</span>
+    </div>
+  </div>
+  <div class="chat-mock">
+    <div class="chat-card">
+      <div class="chat-head"><div class="avatar"></div><div><div class="nm">FindScribe</div><div class="st">● online — engines ready</div></div></div>
+      <div class="msg user" id="cm-user">find viral posts about AI tools</div>
+      <div class="msg ai" id="cm-ai1" style="display:none">Found <b>12 outliers</b> this week. Top pattern: "I tested X so you don't have to."</div>
+      <div class="msg ai" id="cm-ai2" style="display:none">Want me to transcribe the best one and templatize the hook?</div>
+      <div class="msg user" id="cm-user2" style="display:none">yes — build the template</div>
+      <div class="typing" id="cm-ty" style="display:none"><i></i><i></i><i></i></div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee-sec">
+  <div class="marquee" id="mq">
+    <span class="mq-item">▶ 4.2M views — "I tested 7 AI tools"</span>
+    <span class="mq-item">▶ 2.9M views — "Day in the life"</span>
+    <span class="mq-item">▶ 1.8M views — "Stop doing this"</span>
+    <span class="mq-item">▶ 5.1M views — "How I'd start over"</span>
+    <span class="mq-item">▶ 940K views — "The 3-step system"</span>
+    <span class="mq-item">▶ 3.3M views — "Nobody talks about this"</span>
+  </div>
+</div>
+
+<section id="why" class="wrap">
+  <div class="problem-grid">
+    <div class="reveal">
+      <div class="eyebrow">The gap</div>
+      <p class="big-quote">You don't have an <em>idea problem.</em><br>You have a <em>pattern problem.</em><br>Winning videos run on structures — and you can't see them from the outside.</p>
+    </div>
+    <div class="pain">
+      <div class="pain-item reveal" style="transition-delay:.05s"><span class="x">✕</span><p><b>Guessing what works.</b> You publish into the void and hope the algorithm notices you.</p></div>
+      <div class="pain-item reveal" style="transition-delay:.15s"><span class="x">✕</span><p><b>Studying videos manually.</b> Pausing, rewinding, scribbling notes — hours for one script.</p></div>
+      <div class="pain-item reveal" style="transition-delay:.25s"><span class="x">✕</span><p><b>Reinventing every week.</b> What worked last time lives in your memory, nowhere your team can reach.</p></div>
+      <div class="pain-item reveal" style="transition-delay:.35s"><span class="ok">✓</span><p><b>With FindScribe:</b> the winning structure becomes a fill-in-the-blank template in minutes — reusable forever.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="center">
+      <div class="eyebrow reveal">How it works</div>
+      <h2 class="reveal zoom" style="transition-delay:.1s">One sentence.<br>Three engines. One publish-ready script.</h2>
+      <p class="sec-sub reveal" style="transition-delay:.2s">Type what you want in chat. FindScribe routes it to viral search, transcription, or templatize — no dashboard hunting.</p>
+    </div>
+    <div class="steps">
+      <div class="step-card reveal zoom" style="transition-delay:.05s"><div class="glowline"></div><div class="num">01</div><h3>Ask</h3><p>“Find viral posts about faceless channels.” One sentence in chat — FindScribe picks the right engine and shows what the outliers have in common.</p></div>
+      <div class="step-card reveal zoom" style="transition-delay:.18s"><div class="glowline"></div><div class="num">02</div><h3>Transcribe</h3><p>Pull public captions, paste copy, or drop an SRT. The exact script — pacing intact — stays linked to the source video.</p></div>
+      <div class="step-card reveal zoom" style="transition-delay:.31s"><div class="glowline"></div><div class="num">03</div><h3>Templatize</h3><p>Turn the winning script into a fill-in-the-blank your team runs every week. Hooks, structure, techniques — shipped, not guessed.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="center">
+      <div class="eyebrow reveal">The product</div>
+      <h2 class="reveal zoom" style="transition-delay:.1s">Three engines. Zero guesswork.</h2>
+    </div>
+    <div class="tilt-grid">
+      <div class="tilt reveal" style="transition-delay:.05s"><div class="icon">🔍</div><h3>Find</h3><p>See what's already winning before you write a word.</p>
+        <div class="feat-list"><span><i>→</i> Search across YouTube, TikTok, Instagram, Facebook</span><span><i>→</i> Outlier videos with proven view counts</span><span><i>→</i> Patterns surfaced, not just links</span></div></div>
+      <div class="tilt reveal" style="transition-delay:.16s"><div class="icon">🎤</div><h3>Transcribe</h3><p>Capture the exact script behind the views.</p>
+        <div class="feat-list"><span><i>→</i> Public captions, pasted copy, or SRT upload</span><span><i>→</i> PDF transcripts with pacing intact</span><span><i>→</i> Transcript stays linked to its source</span></div></div>
+      <div class="tilt reveal" style="transition-delay:.27s"><div class="icon">⚡</div><h3>Templatize</h3><p>Ship the pattern, not the guess.</p>
+        <div class="feat-list"><span><i>→</i> Fill-in-the-blank reusable templates</span><span><i>→</i> Hooks and structure extracted by AI</span><span><i>→</i> Your library grows every week</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="tpl-band" id="template">
+  <div class="wrap">
+    <div class="center">
+      <div class="eyebrow reveal">Live pattern</div>
+      <h2 class="reveal zoom" style="transition-delay:.1s">A viral script becomes a template.</h2>
+      <p class="sec-sub reveal" style="transition-delay:.2s">Hover the highlighted fields — everything your team fills in. The structure does the heavy lifting.</p>
+    </div>
+    <div class="tpl-demo">
+      <div class="tpl-card reveal zoom" style="transition-delay:.1s">
+        <div class="tpl-line">"I tested <span class="blank">7 AI tools</span> so you don't have to."</div>
+        <div class="tpl-line">[HOOK] <span class="blank">Big claim or number</span> + "so you don't have to."</div>
+        <div class="tpl-line">[SETUP] "Here's what happened after <span class="blank">30 days</span>."</div>
+        <div class="tpl-line">[VALUE] <span class="blank">3 results</span>, fastest first. <span class="blank">One surprise</span> at the end.</div>
+        <div class="tpl-line">[CTA] "Comment <span class="blank">'TOOLS'</span> and I'll send the list."</div>
+        <div class="tpl-meta"><span class="chip">Hook pattern</span><span class="chip">Retention beat</span><span class="chip">Comment trigger</span><span class="chip">1.4M avg views</span></div>
+      </div>
+      <div class="tpl-why reveal" style="transition-delay:.25s">
+        <h4>Why this template wins</h4>
+        <div class="why-row"><span class="n">01</span><p><b>Curiosity gap.</b> "Tested for you" promises finished research — the viewer skips nothing.</p></div>
+        <div class="why-row"><span class="n">02</span><p><b>Retention beat.</b> Results revealed fastest-first keep watch time high through the middle.</p></div>
+        <div class="why-row"><span class="n">03</span><p><b>Comment trigger.</b> A specific keyword CTA converts viewers into signals the algorithm reads.</p></div>
+        <div class="why-row"><span class="n">04</span><p><b>Reusable weekly.</b> Swap the blanks — same skeleton, fresh video, every single week.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap">
+    <div class="center">
+      <div class="eyebrow reveal">Built on evidence</div>
+      <h2 class="reveal zoom" style="transition-delay:.1s">Every template comes with receipts.</h2>
+    </div>
+    <div class="gal">
+      <div class="g-card reveal zoom" style="transition-delay:.05s"><div class="art" style="background:linear-gradient(140deg,#1b2b1f,#0a0a0e 70%)"></div><div class="veil"></div><div class="lab"><div class="t">"I tested 7 AI tools so you don't have to"</div><div class="v">4.2M views · Testimonial pattern</div></div></div>
+      <div class="g-card reveal zoom" style="transition-delay:.14s"><div class="art" style="background:linear-gradient(140deg,#241b33,#0a0a0e 70%)"></div><div class="veil"></div><div class="lab"><div class="t">"How I'd start from $0 in 2026"</div><div class="v">5.1M views · Authority pattern</div></div></div>
+      <div class="g-card reveal zoom" style="transition-delay:.23s"><div class="art" style="background:linear-gradient(140deg,#1b2633,#0a0a0e 70%)"></div><div class="veil"></div><div class="lab"><div class="t">"Stop doing this in your edits"</div><div class="v">1.8M views · Correction pattern</div></div></div>
+      <div class="g-card reveal zoom" style="transition-delay:.32s"><div class="art" style="background:linear-gradient(140deg,#332b1b,#0a0a0e 70%)"></div><div class="veil"></div><div class="lab"><div class="t">"The 3-step system nobody uses"</div><div class="v">3.3M views · Framework pattern</div></div></div>
+    </div>
+    <div class="stats-band">
+      <div class="stat reveal" style="transition-delay:.05s"><div class="v"><em>4</em></div><div class="l">Platforms searched — YouTube, TikTok, Instagram, Facebook</div></div>
+      <div class="stat reveal" style="transition-delay:.15s"><div class="v"><em>1</em></div><div class="l">Sentence to go from idea to publish-ready script</div></div>
+      <div class="stat reveal" style="transition-delay:.25s"><div class="v"><em>3</em></div><div class="l">Engines — Find, Transcribe, Templatize</div></div>
+      <div class="stat reveal" style="transition-delay:.35s"><div class="v"><em>∞</em></div><div class="l">Templates your library grows into</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="love">
+  <div class="wrap">
+    <div class="center">
+      <div class="eyebrow reveal">Creators on FindScribe</div>
+      <h2 class="reveal zoom" style="transition-delay:.1s">For people who ship every week.</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="t-card reveal" style="transition-delay:.05s"><p>"I used to spend Sundays studying viral videos by hand. Now the template library does that for me and my editor just fills in the blanks."</p><div class="who"><div class="av">T</div><div><div class="nm">Tunde A.</div><div class="role">Tech channel · 340K subs</div></div></div></div>
+      <div class="t-card reveal" style="transition-delay:.16s"><p>"The transcription is the killer feature. I paste a link, get the exact script with pacing, and templatize it before my coffee gets cold."</p><div class="who"><div class="av">M</div><div><div class="nm">Maya O.</div><div class="role">Lifestyle creator · TikTok-first</div></div></div></div>
+      <div class="t-card reveal" style="transition-delay:.27s"><p>"Our whole team runs on the same template library now. Onboarding a new writer takes a day instead of a month."</p><div class="who"><div class="av">K</div><div><div class="nm">Kelechi N.</div><div class="role">Content lead · 5-person team</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="center">
+      <div class="eyebrow reveal">Pricing</div>
+      <h2 class="reveal zoom" style="transition-delay:.1s">Start free. Upgrade when it sticks.</h2>
+      <p class="sec-sub reveal" style="transition-delay:.2s">Credits cover search, transcription, and templates. Failed jobs are refunded.</p>
+    </div>
+    <div class="price-grid">
+      <div class="p-card reveal zoom" style="transition-delay:.05s"><h3>Free</h3><div class="desc">Try the core workflow</div><div class="pr">$0<span> /mo</span></div>
+        <ul><li>15 starter credits</li><li>Chat workspace</li><li>Viral search</li><li>Basic export</li></ul>
+        <a href="#" class="btn btn-ghost">Get started</a></div>
+      <div class="p-card hot reveal zoom" style="transition-delay:.18s"><span class="tag-hot">MOST POPULAR</span><h3>Professional</h3><div class="desc">For teams shipping weekly</div><div class="pr">$49<span> /mo</span></div>
+        <ul><li>Higher credit pool</li><li>Bulk transcription</li><li>Priority processing</li><li>Team workflows</li></ul>
+        <a href="#" class="btn btn-primary">Get started</a></div>
+      <div class="p-card reveal zoom" style="transition-delay:.31s"><h3>Starter</h3><div class="desc">For individual creators</div><div class="pr">$19<span> /mo</span></div>
+        <ul><li>Monthly credits</li><li>Viral search</li><li>PDF transcripts</li></ul>
+        <a href="#" class="btn btn-ghost">Get started</a></div>
+    </div>
+    <p class="custom-note reveal">Need volume, seats and SLAs? <a href="#">Talk to us →</a></p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="center"><div class="eyebrow reveal">FAQ</div><h2 class="reveal zoom" style="transition-delay:.1s">Questions</h2></div>
+    <div class="faq">
+      <div class="f-item reveal"><button class="f-q">Do I need an account to start?<span class="pm">+</span></button><div class="f-a"><p>Yes — create a free account to open the workspace. Every new signup receives 15 credits to search, transcribe, and templatize.</p></div></div>
+      <div class="f-item reveal"><button class="f-q">Is everything in chat now?<span class="pm">+</span></button><div class="f-a"><p>Chat is home after login. You can still open Viral Search, Transcribe, Templatize, and your library as full pages while those engines are wired into the thread.</p></div></div>
+      <div class="f-item reveal"><button class="f-q">Which platforms can I search?<span class="pm">+</span></button><div class="f-a"><p>v1 supports YouTube, Instagram, TikTok and Facebook. Discovery is strongest where official APIs allow it; everywhere else you can still ingest a URL directly.</p></div></div>
+      <div class="f-item reveal"><button class="f-q">How do credits work?<span class="pm">+</span></button><div class="f-a"><p>New accounts receive 15 credits. Search, transcription, and templatization each cost credits, and costs are shown before expensive actions. Failed jobs are refunded.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-final">
+  <div class="orb orb-violet"></div><div class="orb orb-lime" style="opacity:.35"></div>
+  <div class="wrap">
+    <div class="eyebrow reveal" style="margin-top:0">Ready when you are</div>
+    <h2 class="reveal zoom" style="transition-delay:.1s"><span class="z">Stop guessing.</span><br><span class="z" style="animation-delay:.4s;color:var(--lime)">Start templatizing.</span></h2>
+    <a href="#pricing" class="btn btn-primary reveal" style="transition-delay:.25s">Try FindScribe free →</a>
+    <p class="hero-note reveal" style="transition-delay:.35s">15 starter credits · No card required</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="#"><span class="mark">F</span>FindScribe</a>
+    <div class="links"><a href="#why">Overview</a><a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#">Privacy</a><a href="#">Terms</a></div>
+  </div>
+  <div class="wrap" style="margin-top:26px"><p class="fine">© 2026 FindScribe — Find viral content, transcribe it, and turn winning patterns into reusable templates.</p></div>
+</footer>
+
+<script>
+// nav + progress
+const nav=document.getElementById('nav'),prog=document.getElementById('progress');
+addEventListener('scroll',()=>{
+  nav.classList.toggle('scrolled',scrollY>40);
+  const h=document.documentElement;
+  prog.style.width=(scrollY/(h.scrollHeight-h.clientHeight)*100)+'%';
+},{passive:true});
+
+// reveal on scroll
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// zoom sections handled by the .reveal observer above (scale via .zoom class)
+
+// hero word lift already via CSS. chat mock loop:
+const seq=[['cm-ty',700],['cm-ai1',1400],['cm-ai2',2200],['cm-user2',2600]];
+function chatLoop(){
+  const els=['cm-ty','cm-ai1','cm-ai2','cm-user2'].map(id=>document.getElementById(id));
+  els.forEach(e=>e.style.display='none');
+  document.getElementById('cm-user').style.display='block';
+  setTimeout(()=>document.getElementById('cm-ty').style.display='inline-flex',600);
+  setTimeout(()=>{document.getElementById('cm-ty').style.display='none';document.getElementById('cm-ai1').style.display='block'},2000);
+  setTimeout(()=>document.getElementById('cm-ai2').style.display='block',2900);
+  setTimeout(()=>document.getElementById('cm-user2').style.display='block',4200);
+}
+setTimeout(chatLoop,1600);setInterval(chatLoop,12000);
+
+// duplicate marquee content for seamless loop
+const mq=document.getElementById('mq');mq.innerHTML+=mq.innerHTML;
+
+// tilt cards
+document.querySelectorAll('.tilt').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`rotateX(${(-y*7).toFixed(2)}deg) rotateY(${(x*7).toFixed(2)}deg)`;
+  });
+  card.addEventListener('mouseleave',()=>card.style.transform='');
+});
+
+// blank hover glow rotation in template demo
+const blanks=[...document.querySelectorAll('.blank')];
+setInterval(()=>{const b=blanks[Math.floor(Math.random()*blanks.length)];b.classList.add('hot');setTimeout(()=>b.classList.remove('hot'),900)},1200);
+
+// FAQ accordion
+document.querySelectorAll('.f-q').forEach(q=>q.addEventListener('click',()=>{
+  const item=q.parentElement,a=item.querySelector('.f-a'),open=item.classList.contains('open');
+  document.querySelectorAll('.f-item.open').forEach(i=>{i.classList.remove('open');i.querySelector('.f-a').style.maxHeight=0});
+  if(!open){item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px'}
+}));
+</script>
+</body>
+</html>
