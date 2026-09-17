@@ -791,7 +791,7 @@ document.querySelectorAll('.preset').forEach(p=>p.addEventListener('click',()=>{
     el.classList.add('show','active');el.querySelector('.st').textContent='running';
     setTimeout(()=>{el.classList.remove('active');el.classList.add('done');el.querySelector('.st').textContent='✓ '+engs[i].r;chatBody.scrollTop=chatBody.scrollHeight},700);
   },300+i*1000));
-  setTimeout(()=>bubble('bot','Done ✅ <b>1 template</b> extracted — it's live on the right. Fill the blanks and ship it.'),300+engs.length*1000+900);
+  setTimeout(()=>bubble('bot','Done ✅ <b>1 template</b> extracted — it is live on the right. Fill the blanks and ship it.'),300+engs.length*1000+900);
 }));
 
 // pause offscreen videos to save perf
@@ -801,6 +801,9 @@ const vio=new IntersectionObserver(es=>es.forEach(e=>{
   if(e.isIntersecting){v.play().catch(()=>{})} else {v.pause()}
 }),{threshold:.15});
 vids.forEach(v=>vio.observe(v));
+</script>
+<script>
+window.addEventListener('load',function(){setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(function(e){e.classList.add('in')})},2500)});
 </script>
 </body>
 </html>
