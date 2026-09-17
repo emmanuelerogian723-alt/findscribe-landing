@@ -8,6 +8,8 @@
 <meta property="og:title" content="FindScribe — Steal the Pattern. Ship the Script.">
 <meta property="og:description" content="Find viral posts. Transcribe the script. Templatize the pattern. Built for creators who ship every week.">
 <meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23d4ff3f'/%3E%3Ctext x='50' y='72' font-size='62' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='%23000'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="canonical" href="https://emmanuelerogian723-alt.github.io/findscribe-landing/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600;700;800&display=swap" rel="stylesheet">
@@ -328,6 +330,43 @@ footer{border-top:1px solid var(--border);padding:56px 0 40px;position:relative;
 .trust-txt .num{font-weight:700;color:var(--text);margin-right:4px}
 .trust-txt .sub{color:var(--dim);font-size:.74rem}
 
+
+/* ── interactive demo ── */
+.demo-band{background:linear-gradient(180deg,var(--bg),var(--bg2) 50%,var(--bg));border-top:1px solid var(--border)}
+.demo-grid{margin-top:60px;display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:stretch}
+@media(max-width:960px){.demo-grid{grid-template-columns:1fr}}
+.chat-box{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden}
+.chat-head{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;font-family:var(--font-d);font-weight:600;font-size:.92rem}
+.chat-head .dotg{width:8px;height:8px;border-radius:50%;background:var(--lime);animation:pulseDot 1.6s infinite}
+.chat-body{padding:22px;flex:1;display:flex;flex-direction:column;gap:14px;min-height:300px}
+.msg{max-width:86%;padding:12px 16px;border-radius:16px;font-size:.88rem;line-height:1.55;opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s}
+.msg.show{opacity:1;transform:none}
+.msg.user{align-self:flex-end;background:var(--lime);color:#000;border-bottom-right-radius:4px;font-weight:500}
+.msg.bot{align-self:flex-start;background:rgba(255,255,255,.06);border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg.bot b{color:var(--lime)}
+.eng-steps{align-self:flex-start;display:flex;flex-direction:column;gap:7px;width:86%}
+.eng-step{display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--dim);background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:8px 13px;opacity:0;transform:translateX(-8px);transition:all .4s}
+.eng-step.show{opacity:1;transform:none}
+.eng-step.active{color:var(--text);border-color:rgba(212,255,63,.4)}
+.eng-step.done{color:var(--dim)}
+.eng-step.done .st{color:var(--lime)}
+.eng-step .st{margin-left:auto;font-weight:700;font-size:.7rem}
+.chat-presets{padding:0 22px 16px;display:flex;gap:8px;flex-wrap:wrap}
+.preset{font-size:.74rem;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:100px;padding:6px 13px;cursor:pointer;transition:all .25s}
+.preset:hover{color:var(--text);border-color:rgba(212,255,63,.4)}
+.tpl-live{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:30px;display:flex;flex-direction:column}
+.tpl-live h4{font-family:var(--font-d);font-size:1.05rem;margin-bottom:6px}
+.tpl-live .hint{font-size:.76rem;color:var(--dim);margin-bottom:20px}
+.fills{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+@media(max-width:560px){.fills{grid-template-columns:1fr}}
+.fill{display:flex;flex-direction:column;gap:5px}
+.fill label{font-size:.66rem;font-weight:700;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+.fill input{background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--font-b);font-size:.86rem;padding:10px 12px;outline:none;transition:border-color .25s,box-shadow .25s}
+.fill input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(212,255,63,.12)}
+.script-out{background:#0b0b0f;border:1px solid var(--border);border-radius:14px;padding:20px;font-family:var(--font-d);font-size:.92rem;line-height:1.9}
+.script-out .lbl{font-size:.62rem;letter-spacing:.2em;color:var(--dim);font-weight:700;margin-bottom:10px}
+.script-out em{color:var(--lime);font-style:normal;font-weight:600;border-bottom:1px dashed rgba(212,255,63,.5)}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -612,6 +651,46 @@ footer{border-top:1px solid var(--border);padding:56px 0 40px;position:relative;
   </div>
 </section>
 
+
+<section class="demo-band" id="try">
+  <div class="wrap">
+    <div class="center">
+      <div class="eyebrow reveal">Try the concept</div>
+      <h2 class="reveal zoom" style="transition-delay:.1s">One sentence in.<br>A finished script out.</h2>
+      <p class="sec-sub reveal" style="transition-delay:.2s">This is the whole product. Type a sentence, watch the engines fire — then fill the blanks of a real extracted template.</p>
+    </div>
+    <div class="demo-grid">
+      <div class="chat-box reveal zoom" style="transition-delay:.1s">
+        <div class="chat-head"><span class="dotg"></span>FindScribe chat</div>
+        <div class="chat-body" id="chatBody">
+          <div class="msg bot show">Hey 👋 What are we shipping this week?</div>
+        </div>
+        <div class="chat-presets">
+          <span class="preset" data-s="Find viral posts about faceless channels">Find viral posts…</span>
+          <span class="preset" data-s="Transcribe this video: youtube.com/watch?v=…">Transcribe a video…</span>
+          <span class="preset" data-s="Templatize my best-performing script">Templatize my script</span>
+        </div>
+      </div>
+      <div class="tpl-live reveal zoom" style="transition-delay:.2s">
+        <h4>Fill the blanks — watch the script build itself</h4>
+        <div class="hint">The template on the right is what FindScribe extracts from a 4.2M-view video.</div>
+        <div class="fills">
+          <div class="fill"><label>Your topic</label><input id="fTopic" value="faceless channels"></div>
+          <div class="fill"><label>Big number</label><input id="fNum" value="7"></div>
+          <div class="fill"><label>Timeframe</label><input id="fTime" value="30 days"></div>
+          <div class="fill"><label>Comment keyword</label><input id="fCta" value="START"></div>
+        </div>
+        <div class="script-out">
+          <div class="lbl">YOUR SCRIPT — PATTERN: TESTIMONIAL</div>
+          <div class="ln">"I tested <em id="oNum">7</em> <em id="oTopic">faceless channels</em> so you don't have to."</div>
+          <div class="ln">"Here's what happened after <em id="oTime">30 days</em>."</div>
+          <div class="ln">"Comment '<em id="oCta">START</em>' and I'll send you the exact system."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="pricing">
   <div class="wrap">
     <div class="center">
@@ -685,6 +764,34 @@ document.querySelectorAll('.f-q').forEach(q=>q.addEventListener('click',()=>{
   const item=q.parentElement,a=item.querySelector('.f-a'),open=item.classList.contains('open');
   document.querySelectorAll('.f-item.open').forEach(i=>{i.classList.remove('open');i.querySelector('.f-a').style.maxHeight=0});
   if(!open){item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px'}
+}));
+
+
+// interactive template fills
+const fm={t:document.getElementById('fTopic'),n:document.getElementById('fNum'),d:document.getElementById('fTime'),c:document.getElementById('fCta')};
+const om={t:document.getElementById('oTopic'),n:document.getElementById('oNum'),d:document.getElementById('oTime'),c:document.getElementById('oCta')};
+const sync=()=>{om.t.textContent=fm.t.value||'…';om.n.textContent=fm.n.value||'…';om.d.textContent=fm.d.value||'…';om.c.textContent=(fm.c.value||'…').toUpperCase()};
+Object.values(fm).forEach(i=>i.addEventListener('input',sync));
+
+// chat demo flow
+const chatBody=document.getElementById('chatBody');
+const engs=[
+ {n:'🔍 Find engine — searching outliers',r:'4 outliers found · 4.2M avg views'},
+ {n:'🎤 Transcribe engine — pulling script',r:'script extracted · pacing intact'},
+ {n:'⚡ Templatize engine — extracting pattern',r:'template ready · 4 blanks'}
+];
+function bubble(cls,html){const d=document.createElement('div');d.className='msg '+cls;d.innerHTML=html;chatBody.appendChild(d);requestAnimationFrame(()=>d.classList.add('show'));chatBody.scrollTop=chatBody.scrollHeight;return d}
+document.querySelectorAll('.preset').forEach(p=>p.addEventListener('click',()=>{
+  const txt=p.dataset.s;
+  bubble('user',txt);
+  const steps=document.createElement('div');steps.className='eng-steps';
+  engs.forEach((e,i)=>{const el=document.createElement('div');el.className='eng-step';el.innerHTML='<span>'+e.n+'</span><span class="st">···</span>';steps.appendChild(el)});
+  chatBody.appendChild(steps);
+  [...steps.children].forEach((el,i)=>setTimeout(()=>{
+    el.classList.add('show','active');el.querySelector('.st').textContent='running';
+    setTimeout(()=>{el.classList.remove('active');el.classList.add('done');el.querySelector('.st').textContent='✓ '+engs[i].r;chatBody.scrollTop=chatBody.scrollHeight},700);
+  },300+i*1000));
+  setTimeout(()=>bubble('bot','Done ✅ <b>1 template</b> extracted — it's live on the right. Fill the blanks and ship it.'),300+engs.length*1000+900);
 }));
 
 // pause offscreen videos to save perf
